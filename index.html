@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terningspill</title>
+    <!-- Stiler for terningsspillet -->
+    <link rel="stylesheet" href="terning.css">
+    <!-- Stiler fra Ionic-rammeverket for ikoner -->
+    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" type="text/css">
+    <!-- Ikoner for nettleserfanen -->
+    <link rel="shortcut icon" href="./img/favicon/apple-touch-icon.png" type="image/x-icon">
+    <style>
+        /* Stiler for nedtellingen før spillet starter */
+        .countdown {
+            font-size: 64px;
+            text-align: center;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: red;
+            font-weight: bold;
+            z-index: 9999;
+        }
+ 
+        /* Stiler for vinnermelding */
+        #winnerMessage {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Inndatafelt for spillerne og startknapp -->
+        <div id="nameInputs">
+            <input type="text" id="player1Name" placeholder="Player 1 Name">
+            <input type="text" id="player2Name" placeholder="Player 2 Name">
+            <button id="startGameBtn">Start Game</button>
+        </div>
+ 
+        <!-- Paneler for spillerne -->
+        <div class="spiller-0-panel aktiv">
+            <div class="spiller-navn" id="navn-0">Player 1</div>
+            <div class="spiller-poeng" id="poeng-0">21</div>
+            <div class="spiller-sum-box">
+                <div class="spiller-sum-label">poengsum</div>
+                <div class="spiller-sum-poeng" id="sum-0">3</div>
+            </div>
+        </div>
+        <div class="spiller-1-panel">
+            <div class="spiller-navn" id="navn-1">Player 2</div>
+            <div class="spiller-poeng" id="poeng-1">11</div>
+            <div class="spiller-sum-box">
+                <div class="spiller-sum-label">poengsum</div>
+                <div class="spiller-sum-poeng" id="sum-1">6</div>
+            </div>
+        </div>
+ 
+        <!-- Knapper for å starte nytt spill, kaste terning og holde -->
+        <button class="btn-ny" id="newGameBtn"><i class="ion-ios-plus-outline"></i>Nytt spill</button>
+        <button class="btn-kast" id="rollDiceBtn" disabled><i class="ion-ios-loop"></i>kast terning</button>
+        <button class="btn-hold" id="holdBtn" disabled><i class="ion-ios-download-outline"></i>Hold</button>
+ 
+        <!-- Bilde av en terning -->
+        <img src="./img/terning-3.png" alt="terning" class="terning" id="terning">
+        
+        <!-- Div for å vise vinnermelding -->
+        <div id="winnerMessage"></div>
+    </div>
+ 
+    <!-- JavaScript-filer for spilllogikken -->
+    <script src="spill.js"></script>
+    <script>
+        // Hendelseslytter for å starte spillet
+        document.getElementById("startGameBtn").addEventListener("click", function() {
+            var player1Name = document.getElementById("player1Name").value;
+            var player2Name = document.getElementById("player2Name").value;
+            // Sett spiller navn basert på inndataene, eller standardnavn hvis ingen inndata
+            document.getElementById("navn-0").textContent = player1Name !== "" ? player1Name : "Player 1";
+            document.getElementById("navn-1").textContent = player2Name !== "" ? player2Name : "Player 2";
+            document.getElementById("nameInputs").style.display = "none";
+ 
+            var count = 3;
+ 
+            // Start nedtellingen før spillet begynner
+            function startCountdown() {
+                if (count >= 0) {
+                    var countdownElement = document.createElement("div");
+                    countdownElement.textContent = count > 0 ? count : "Start!";
+                    countdownElement.classList.add("countdown");
+                    document.body.appendChild(countdownElement);
+                    count--;
+                    setTimeout(function() {
+                        countdownElement.parentNode.removeChild(countdownElement);
+                        if (count >= 0) {
+                            startCountdown();
+                        } else {
+                            // Start spillet her når nedtellingen er ferdig
+                            document.querySelectorAll(".spiller-navn").forEach(function(element) {
+                                element.style.display = "block";
+                            });
+                            document.querySelectorAll(".btn-kast, .btn-hold").forEach(function(element) {
+                                element.disabled = false;
+                                element.style.display = "block";
+                            });
+                            document.getElementById("terning").style.display = "block";
+                        }
+                    }, 1000);
+                }
+            }
+ 
+            startCountdown();
+        });
+ 
+        // Hendelseslytter for å starte et nytt spill
+        document.getElementById("newGameBtn").addEventListener("click", function() {
+            // Viser inndatafeltene for spillerne igjen
+            document.getElementById("nameInputs").style.display = "block";
+            document.getElementById("player1Name").value = "";
+            document.getElementById("player2Name").value = "";
+            // Tilbakestiller spiller navn til standardverdier
+            document.getElementById("navn-0").textContent = "Player 1";
+            document.getElementById("navn-1").textContent = "Player 2";
+            // Deaktiverer knapper for å kaste terning og holde
+            document.querySelectorAll(".btn-kast, .btn-hold").forEach(function(element) {
+                element.disabled = true;
+            });
+        });
+    </script>
+</body>
+</html>
